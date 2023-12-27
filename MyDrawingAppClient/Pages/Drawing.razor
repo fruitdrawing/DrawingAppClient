@@ -19,10 +19,10 @@
 <div class="fixed-top">
     @* <span>@status/@count lines</span> *@
     <button class="btn btn-primary" @onclick="OpenColorModal">
-        <div style="background-color:@color" class="buttonColor"></div> 색깔
+        <div style="background-color:@color" class="buttonColor"></div>Color
     </button>
     <ColorPicker IsOpened="colorPickerOpened" Closed="UseColor" MyColor="@color"></ColorPicker>
-    <button class="btn btn-danger" @onclick="Clear">다 지우기!</button>
+    <button class="btn btn-danger" @onclick="Clear">Delete!</button>
     @foreach (string user in Users)
     {
         <span class="badge badge-secondary" style="margin-left:4px;">@user</span>
