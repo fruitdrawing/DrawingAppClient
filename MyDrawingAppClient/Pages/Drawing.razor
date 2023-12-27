@@ -134,6 +134,8 @@
     
     
     #region signalr
+
+    public string HubAddress = "https://drawingappserver.azurewebsites.net/DrawHub";
     
     private HubConnection? hubConnection;
     private List<string> messages = new List<string>();
@@ -142,7 +144,7 @@
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl("http://localhost:5270/DrawHub")
+            .WithUrl($"{HubAddress}")
             .WithAutomaticReconnect()
             .Build();
         
