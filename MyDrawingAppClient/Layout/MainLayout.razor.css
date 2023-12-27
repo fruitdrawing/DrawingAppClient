@@ -2,10 +2,20 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    overflow:hidden;
+    overscroll-behavior: none;
 }
-
+html {
+    overflow-x: hidden;
+}
+body {
+    overflow-x: hidden;
+}
 main {
     flex: 1;
+    position: relative;
+    overflow:hidden;
+    overscroll-behavior: none;
 }
 
 .sidebar {

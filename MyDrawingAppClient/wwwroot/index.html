@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <meta name="viewport" content="user-scalable=no" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyDrawingAppClient</title>
@@ -13,7 +14,7 @@
 </head>
 
 <body>
-    <div id="app">
+    <div id="app" class="page">
         <svg class="loading-progress">
             <circle r="40%" cx="50%" cy="50%" />
             <circle r="40%" cx="50%" cy="50%" />
@@ -26,7 +27,33 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+    <scirpt>
+        window.addEventListener("scroll", preventMotion, false);
+        window.addEventListener("touchmove", preventMotion, false);
+
+        function preventMotion(event)
+        {
+        window.scrollTo(0, 0);
+        event.preventDefault();
+        event.stopPropagation();
+        }
+    </scirpt>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 
 </html>
+
+<style>
+    .page {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow:hidden;
+    }
+
+    main {
+        flex: 1;
+        position: relative;
+        overflow:hidden;
+    }
+</style>

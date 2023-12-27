@@ -1074,3 +1074,4 @@
 /Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/obj/Debug/net8.0/compressed/rfjotd3ml6.gz
 /Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/obj/Debug/net8.0/compressed/gz848j56qu.gz
 /Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/obj/Debug/net8.0/compressed/lgxtmjc6n6.gz
+/Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/obj/Debug/net8.0/MyDrawingAppClient.sourcelink.json

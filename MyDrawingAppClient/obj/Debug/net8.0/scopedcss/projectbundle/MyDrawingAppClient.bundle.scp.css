@@ -3,10 +3,20 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    overflow:hidden;
+    overscroll-behavior: none;
 }
-
+html[b-q1xekv92gr] {
+    overflow-x: hidden;
+}
+body[b-q1xekv92gr] {
+    overflow-x: hidden;
+}
 main[b-q1xekv92gr] {
     flex: 1;
+    position: relative;
+    overflow:hidden;
+    overscroll-behavior: none;
 }
 
 .sidebar[b-q1xekv92gr] {
