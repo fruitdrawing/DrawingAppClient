@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MyDrawingAppClient",
   "resources": {
-    "hash": "sha256-wrMoh3KFjTzOhsAVch6/AO4Ui8f7enDGfibi9FvgyBM=",
+    "hash": "sha256-2xaGmsLThKhYiaOZkCE4fWqVBA1hcCvWNAjVnBWgbtU=",
     "jsModuleNative": {
       "dotnet.native.8.0.0.qvqg99bzin.js": "sha256-LjLDIz9+J7uuiwMlQ4HbNx2BnSpphOtO2MwkoI28vdI="
     },
@@ -217,10 +217,10 @@
       "mscorlib.wasm": "sha256-cDuLeL3OCtVtiid/dyex1MVgbuzDSRwZxKzuP2Dp4mg=",
       "netstandard.wasm": "sha256-A0h86SDieTMoU/wU2JTszWCsUmMuguDcbap0b0BzsmI=",
       "System.Private.CoreLib.wasm": "sha256-/0DNIm/T0C07X7Tuz5uR8JvVCoAfEE2MnfPUSjyS9xc=",
-      "MyDrawingAppClient.wasm": "sha256-TnlEJHEPtDcQ8x0SALkyCL92nUTFIT6UvIoX0WI8Bkg="
+      "MyDrawingAppClient.wasm": "sha256-Gu/tj37SO5JBr4Di7hmZW6OmiFQf420OU/dqSeQTOO8="
     },
     "pdb": {
-      "MyDrawingAppClient.pdb": "sha256-zpZgKQJWPyGtaB2bCIhTrZf/50LtxI2H8MXIj+tAYCA="
+      "MyDrawingAppClient.pdb": "sha256-/5HEk9vk2IE3XvCWR5cHZAikOvMY/1k9o020UnN3Cqs="
     }
   },
   "cacheBootResources": true,

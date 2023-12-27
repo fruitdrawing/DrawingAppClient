@@ -7,7 +7,7 @@
 
 <div id="canv" @onmousemove="MoveMouse" @onmousedown="DownMouse" @onmouseup="UpMouse"
      @ontouchmove="MoveTouch" @ontouchstart="DownTouch" @ontouchend="UpTouch"
-     style="border:1px solid black;display:inline-block;max-height:100vh;max-width:100vw;overflow:hidden;margin: 0;
+     style="background:@currentBackgroundColor;border:1px solid black;display:inline-block;max-height:100vh;max-width:100vw;overflow:hidden;margin: 0;
                                                                                                             padding: 0;   position: fixed;">
     <svg style="width:720px; height:1920px;">
         @foreach (var line in Lines)
@@ -16,17 +16,24 @@
         }
     </svg>
 </div>
-<div class="fixed-top">
+<div class="fixed-bottom">
     @* <span>@status/@count lines</span> *@
-    <button class="btn btn-primary" @onclick="OpenColorModal">
-        <div style="background-color:@color" class="buttonColor"></div>Color
+    <button class="btn btn-outline-info" @onclick="OpenColorModal">
+        <div style="background-color:@currentBrushColor" class="buttonColor"></div>🌈
     </button>
-    <ColorPicker IsOpened="colorPickerOpened" Closed="UseColor" MyColor="@color"></ColorPicker>
-    <button class="btn btn-danger" @onclick="Clear">Delete!</button>
-    @foreach (string user in Users)
-    {
-        <span class="badge badge-secondary" style="margin-left:4px;">@user</span>
-    }
+    <ColorPicker IsOpened="brushColorPickerOpened" Closed="ChangeBrushColor" MyColor="@currentBrushColor"></ColorPicker>
+    <ColorPicker IsOpened="backgroundColorPickerOpened" Closed="ChangeBackgroundColorAndSendMessageServer" MyColor="@currentBackgroundColorTemp"></ColorPicker>
+    
+    <button class="btn btn-danger" @onclick="Clear">💀</button>
+    <span>       &nbsp&nbsp&nbsp       </span>
+    <button class="btn btn-outline-light" @onclick="@(()=>ChangeLineWidth(3))">S</button>
+    <button class="btn btn-outline-info" @onclick="@(()=>ChangeLineWidth(5))">M</button>
+    <button class="btn btn-outline-warning" @onclick="@(()=>ChangeLineWidth(9f))">L</button>
+    <button class="btn btn-outline-secondary" @onclick="@(() => OpenColorModalForBackGround())">🪣</button>
+    @* @foreach (string user in Users) *@
+    @* { *@
+    @*     <span class="badge badge-secondary" style="margin-left:4px;">@user</span> *@
+    @* } *@
 </div>
 
 
@@ -35,13 +42,25 @@
 @code {
     
     #region drawing
+    protected float currentLineWidth = 4.3f;
     protected List<Line> Lines = new List<Line>();
     
     protected List<string> Users = new List<string>();
     
     protected bool flag = false;
     
-    protected bool colorPickerOpened = false;
+    protected bool brushColorPickerOpened = false;
+
+    protected bool backgroundColorPickerOpened = false;
+    
+    protected string currentBackgroundColor = "#22262f";
+    protected string currentBackgroundColorTemp = "#22262f";
+    
+    private async Task ChangeBackgroundColorAndSendMessageServer(string value)
+    {
+        await hubConnection?.SendAsync("ChangeBackgroundColor", value);
+        backgroundColorPickerOpened = false;
+    }
     
     protected double prevX = 0;
     protected double currX = 0;
@@ -52,8 +71,7 @@
     
     protected int status = 0;
     
-    protected string color = "#000000";
-    protected float lineWidth = 3;
+    protected string currentBrushColor = "#000000";
     
     private async Task MoveMouse(MouseEventArgs e)
     {
@@ -65,6 +83,8 @@
     }
     private async Task Move(double clientX, double clientY)
     {
+        if (IsConnected == false) return;
+
         if (flag)
         {
             prevX = currX;
@@ -72,11 +92,10 @@
             currX = clientX;
             currY = clientY;
     
-            var addedLine = new Line(prevX, prevY, currX, currY, color, lineWidth);
+            var addedLine = new Line(prevX, prevY, currX, currY, currentBrushColor, currentLineWidth);
             Lines.Add(addedLine);
     
-            if(IsConnected == true)
-            await hubConnection?.SendAsync("Draw", prevX, prevY, currX, currY, color, lineWidth);
+            await hubConnection?.SendAsync("Draw", prevX, prevY, currX, currY, currentBrushColor, currentLineWidth);
     
             status++;
             count++;
@@ -114,22 +133,23 @@
     
     void OpenColorModal()
     {
-        colorPickerOpened = true;
+        brushColorPickerOpened = true;
     }
     
-    private void UseColor(string value)
+    void OpenColorModalForBackGround()
     {
-        if (value == "#FFFFFF")
-        {
-            color = "white";
-            lineWidth = 10;
-        }
-        else
-        {
-            color = value;
-            lineWidth = 2;
-        }
-        colorPickerOpened = false;
+        backgroundColorPickerOpened = true;
+    }
+    
+    private void ChangeLineWidth(float value)
+    {
+        currentLineWidth = value;
+    }
+    private void ChangeBrushColor(string value)
+    {
+        currentBrushColor = value;
+        brushColorPickerOpened = false;
+        Console.WriteLine("ChangeBrushColor : " + currentBrushColor);
     }
     #endregion
     
@@ -137,6 +157,7 @@
     #region signalr
 
     public string HubAddress = "https://drawingappserver.azurewebsites.net/DrawHub";
+    // public string HubAddress = "http://localhost:5270/DrawHub";
     
     private HubConnection? hubConnection;
     private List<string> messages = new List<string>();
@@ -150,6 +171,14 @@
             .Build();
         
         hubConnection.Closed += async (err) => Console.WriteLine(err);
+
+        hubConnection.On<string>("ChangeBackgroundColor", 
+            async (newColor) =>
+            {
+                currentBackgroundColor = newColor;
+                Console.WriteLine(newColor);
+                await InvokeAsync(StateHasChanged);
+        });
         
         hubConnection.On<double, double, double, double, string, float>("ReceiveDraw", async (SprevX, SprevY, ScurrX, ScurrY, Scolor, SlineWidth) =>
         {
@@ -159,7 +188,7 @@
         
             status++;
             count++;
-            InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
         });
         
         hubConnection.On("ReceiveClear", async () =>
@@ -183,7 +212,10 @@
         Console.WriteLine(count);
         Users = await hubConnection.InvokeAsync<List<string>>("StartUsers", Guid.NewGuid().ToString().Substring(0, 4));
         Console.WriteLine(Users);
-
+        var downloadBackgroundColorFromServer = 
+            await hubConnection.InvokeAsync<string>("GetBackgroundColor");
+        currentBackgroundColor = downloadBackgroundColorFromServer;
+        
         StateHasChanged();
         var cancellationTokenSource = new CancellationTokenSource();
         var stream = hubConnection.StreamAsync<Line>(
