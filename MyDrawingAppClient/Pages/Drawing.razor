@@ -1,0 +1,223 @@
+@page "/"
+@using Microsoft.AspNetCore.SignalR.Client;
+@using System.Threading;
+@using BlazorColorPicker
+@using DistributedDrawing.Example.Extensions
+@inject NavigationManager NavManager;
+
+<div id="canv" @onmousemove="MoveMouse" @onmousedown="DownMouse" @onmouseup="UpMouse"
+     @ontouchmove="MoveTouch" @ontouchstart="DownTouch" @ontouchend="UpTouch"
+     style="border:0px solid black;display:inline-block;max-height:100vh;max-width:100vw;overflow:hidden;">
+    <svg style="width:720px; height:1920px;">
+        @foreach (var line in Lines)
+        {
+            <LineComponent X1=@line.prevX Y1=@line.prevY X2=@line.currX Y2=@line.currY Stroke=@line.color StrokeWidth=@line.lineWidth />
+        }
+    </svg>
+</div>
+<div class="fixed-top">
+    @* <span>@status/@count lines</span> *@
+    <button class="btn btn-primary" @onclick="OpenColorModal">
+        <div style="background-color:@color" class="buttonColor"></div> 색깔
+    </button>
+    <ColorPicker IsOpened="colorPickerOpened" Closed="UseColor" MyColor="@color"></ColorPicker>
+    <button class="btn btn-danger" @onclick="Clear">다 지우기!</button>
+    @foreach (string user in Users)
+    {
+        <span class="badge badge-secondary" style="margin-left:4px;">@user</span>
+    }
+</div>
+
+
+
+
+@code {
+    
+    #region drawing
+    protected List<Line> Lines = new List<Line>();
+    
+    protected List<string> Users = new List<string>();
+    
+    protected bool flag = false;
+    
+    protected bool colorPickerOpened = false;
+    
+    protected double prevX = 0;
+    protected double currX = 0;
+    protected double prevY = 0;
+    protected double currY = 0;
+    
+    protected int count = 0;
+    
+    protected int status = 0;
+    
+    protected string color = "#000000";
+    protected float lineWidth = 3;
+    
+    private async Task MoveMouse(MouseEventArgs e)
+    {
+        await Move(e.ClientX, e.ClientY);
+    }
+    private async Task MoveTouch(TouchEventArgs e)
+    {
+        await Move(e.Touches[0].ClientX, e.Touches[0].ClientY);
+    }
+    private async Task Move(double clientX, double clientY)
+    {
+        if (flag)
+        {
+            prevX = currX;
+            prevY = currY;
+            currX = clientX;
+            currY = clientY;
+    
+            var addedLine = new Line(prevX, prevY, currX, currY, color, lineWidth);
+            Lines.Add(addedLine);
+    
+            if(IsConnected == true)
+            await hubConnection?.SendAsync("Draw", prevX, prevY, currX, currY, color, lineWidth);
+    
+            status++;
+            count++;
+            this.StateHasChanged();
+        }
+    }
+    
+    private async Task DownMouse(MouseEventArgs e)
+    {
+        await Down(e.ClientX, e.ClientY);
+    }
+    private async Task DownTouch(TouchEventArgs e)
+    {
+        await Down(e.Touches[0].ClientX, e.Touches[0].ClientY);
+    }
+    
+    private async Task Down(double clientX, double clientY)
+    {
+        prevX = currX;
+        prevY = currY;
+        currX = clientX;
+        currY = clientY;
+    
+        flag = true;
+    }
+    
+    private void UpMouse(MouseEventArgs e)
+    {
+        flag = false;
+    }
+    private void UpTouch(TouchEventArgs e)
+    {
+        flag = false;
+    }
+    
+    void OpenColorModal()
+    {
+        colorPickerOpened = true;
+    }
+    
+    private void UseColor(string value)
+    {
+        if (value == "#FFFFFF")
+        {
+            color = "white";
+            lineWidth = 10;
+        }
+        else
+        {
+            color = value;
+            lineWidth = 2;
+        }
+        colorPickerOpened = false;
+    }
+    #endregion
+    
+    
+    #region signalr
+    
+    private HubConnection? hubConnection;
+    private List<string> messages = new List<string>();
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl("http://localhost:5270/DrawHub")
+            .WithAutomaticReconnect()
+            .Build();
+        
+        hubConnection.Closed += async (err) => Console.WriteLine(err);
+        
+        hubConnection.On<double, double, double, double, string, float>("ReceiveDraw", async (SprevX, SprevY, ScurrX, ScurrY, Scolor, SlineWidth) =>
+        {
+            Console.WriteLine("Client : SprevX : " + SprevX + " SprevY : " + SprevY + " ScurrX : " + ScurrX + " ScurrY : " + ScurrY + " Scolor : " + Scolor + " SlineWidth : " + SlineWidth);
+            var addedLine = new Line(SprevX, SprevY, ScurrX, ScurrY, Scolor, SlineWidth);
+            Lines.Add(addedLine);
+        
+            status++;
+            count++;
+            InvokeAsync(StateHasChanged);
+        });
+        
+        hubConnection.On("ReceiveClear", async () =>
+        {
+            Lines.Clear();
+            count = 0;
+            status = 0;
+            await InvokeAsync(StateHasChanged);
+        });
+        
+        hubConnection.On<List<string>>("ReceiveUsers", async (users) =>
+        {
+            Users = users;
+            StateHasChanged();
+        });
+        
+        await hubConnection.StartAsync();
+        
+        // SETUP
+        count = await hubConnection.InvokeAsync<int>("CountLines");
+        Console.WriteLine(count);
+        Users = await hubConnection.InvokeAsync<List<string>>("StartUsers", Guid.NewGuid().ToString().Substring(0, 4));
+        Console.WriteLine(Users);
+
+        StateHasChanged();
+        var cancellationTokenSource = new CancellationTokenSource();
+        var stream = hubConnection.StreamAsync<Line>(
+            "StartLines", cancellationTokenSource.Token);
+        await foreach (Line line in stream)
+        {
+                Lines.Add(line);
+                status++;
+                await Task.Yield();
+        }
+        
+        Console.WriteLine("Initiliazed");
+        StateHasChanged();
+    } 
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            hubConnection.DisposeAsync();
+        }
+    }
+    
+    protected async Task Clear()
+    {
+        Console.WriteLine("Clear");
+        if(IsConnected == true)
+
+        await hubConnection?.SendAsync("Clear");
+    }
+    
+    private void Test()
+    {
+        Console.WriteLine("Test");
+    }
+    //
+    //
+    #endregion
+
+}
