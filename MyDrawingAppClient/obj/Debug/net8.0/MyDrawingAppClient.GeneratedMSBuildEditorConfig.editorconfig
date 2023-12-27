@@ -26,10 +26,6 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/Pages/Drawing.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRHJhd2luZy5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [/Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -49,3 +45,7 @@ build_metadata.AdditionalFiles.CssScope = b-q1xekv92gr
 [/Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L05hdk1lbnUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-n38ll3c7ia
+
+[/Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/Pages/Drawing.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRHJhd2luZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-eeatioszk5

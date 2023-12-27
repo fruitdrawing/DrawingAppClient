@@ -27,17 +27,16 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-    <scirpt>
+    <script type="text/javascript">
         window.addEventListener("scroll", preventMotion, false);
         window.addEventListener("touchmove", preventMotion, false);
-
         function preventMotion(event)
         {
-        window.scrollTo(0, 0);
-        event.preventDefault();
-        event.stopPropagation();
+            window.scrollTo(0, 0);
+            event.preventDefault();
+            event.stopPropagation();
         }
-    </scirpt>
+    </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 

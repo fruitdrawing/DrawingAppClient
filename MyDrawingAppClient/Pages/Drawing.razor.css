@@ -1,0 +1,20 @@
+.page {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    overflow:hidden;
+    overscroll-behavior: none;
+}
+html {
+    overflow-x: hidden;
+}
+body {
+    background: #0a58ca;
+    overflow-x: hidden;
+}
+main {
+    flex: 1;
+    position: fixed;
+    overflow:hidden;
+    overscroll-behavior: none;
+}

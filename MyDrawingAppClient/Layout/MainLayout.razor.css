@@ -1,5 +1,5 @@
 .page {
-    position: relative;
+    position: fixed;
     display: flex;
     flex-direction: column;
     overflow:hidden;
@@ -13,7 +13,7 @@ body {
 }
 main {
     flex: 1;
-    position: relative;
+    position: fixed;
     overflow:hidden;
     overscroll-behavior: none;
 }

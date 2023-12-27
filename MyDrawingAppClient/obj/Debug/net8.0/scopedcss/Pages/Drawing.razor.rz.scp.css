@@ -1,0 +1,20 @@
+.page[b-eeatioszk5] {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    overflow:hidden;
+    overscroll-behavior: none;
+}
+html[b-eeatioszk5] {
+    overflow-x: hidden;
+}
+body[b-eeatioszk5] {
+    background: #0a58ca;
+    overflow-x: hidden;
+}
+main[b-eeatioszk5] {
+    flex: 1;
+    position: fixed;
+    overflow:hidden;
+    overscroll-behavior: none;
+}

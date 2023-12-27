@@ -1,5 +1,5 @@
 .page[b-q1xekv92gr] {
-    position: relative;
+    position: fixed;
     display: flex;
     flex-direction: column;
     overflow:hidden;
@@ -13,7 +13,7 @@ body[b-q1xekv92gr] {
 }
 main[b-q1xekv92gr] {
     flex: 1;
-    position: relative;
+    position: fixed;
     overflow:hidden;
     overscroll-behavior: none;
 }
