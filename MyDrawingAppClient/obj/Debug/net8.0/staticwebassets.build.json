@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "BokiywKpHxFqOIuiu/w9LbdgmpAAk4QWSAL1sdxn2q4=",
+  "Hash": "EENPax6FJTeVABRrzK3awCuf917ne1XiLd3x9NTQ88Y=",
   "Source": "MyDrawingAppClient",
   "BasePath": "/",
   "Mode": "Root",
@@ -8185,6 +8185,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/obj/Debug/net8.0/scopedcss/projectbundle/MyDrawingAppClient.bundle.scp.css"
+    },
+    {
+      "Identity": "/Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/wwwroot/appsetting.json",
+      "SourceId": "MyDrawingAppClient",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "appsetting.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/appsetting.json"
     },
     {
       "Identity": "/Users/avo/RiderProjects/MyDrawingAppClient/MyDrawingAppClient/wwwroot/css/app.css",

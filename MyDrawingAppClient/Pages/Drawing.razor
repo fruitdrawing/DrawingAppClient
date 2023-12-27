@@ -5,6 +5,7 @@
 @using DistributedDrawing.Example.Extensions
 @inject NavigationManager NavManager;
 
+
 <div id="canv" @onmousemove="MoveMouse" @onmousedown="DownMouse" @onmouseup="UpMouse"
      @ontouchmove="MoveTouch" @ontouchstart="DownTouch" @ontouchend="UpTouch"
      style="background:@currentBackgroundColor;border:1px solid black;display:inline-block;max-height:100vh;max-width:100vw;overflow:hidden;margin: 0;
@@ -16,6 +17,8 @@
         }
     </svg>
 </div>
+
+
 <div class="fixed-bottom">
     @* <span>@status/@count lines</span> *@
     <button class="btn btn-outline-info" @onclick="OpenColorModal">
@@ -24,11 +27,15 @@
     <ColorPicker IsOpened="brushColorPickerOpened" Closed="ChangeBrushColor" MyColor="@currentBrushColor"></ColorPicker>
     <ColorPicker IsOpened="backgroundColorPickerOpened" Closed="ChangeBackgroundColorAndSendMessageServer" MyColor="@currentBackgroundColorTemp"></ColorPicker>
     
-    <button class="btn btn-danger" @onclick="Clear">💀</button>
+    <button class="btn btn-dark" @onclick="Clear">💀</button>
     <span>       &nbsp&nbsp&nbsp       </span>
     <button class="btn btn-outline-light" @onclick="@(()=>ChangeLineWidth(3))">S</button>
     <button class="btn btn-outline-info" @onclick="@(()=>ChangeLineWidth(5))">M</button>
     <button class="btn btn-outline-warning" @onclick="@(()=>ChangeLineWidth(9f))">L</button>
+    
+    @* <button class="btn btn-outline-secondary" @onclick="@(() => SendUndoToServer())">↩️</button> *@
+    <span>       &nbsp&nbsp&nbsp       </span>
+    
     <button class="btn btn-outline-secondary" @onclick="@(() => OpenColorModalForBackGround())">🪣</button>
     @* @foreach (string user in Users) *@
     @* { *@
@@ -72,7 +79,11 @@
     protected int status = 0;
     
     protected string currentBrushColor = "#000000";
-    
+
+    // private async Task OnMouseUP(MouseEventArgs e)
+    // {
+    //     Console.WriteLine("On Mouse Up!");
+    // }
     private async Task MoveMouse(MouseEventArgs e)
     {
         await Move(e.ClientX, e.ClientY);
@@ -105,6 +116,7 @@
     
     private async Task DownMouse(MouseEventArgs e)
     {
+        Console.WriteLine("Down Mouse!");
         await Down(e.ClientX, e.ClientY);
     }
     private async Task DownTouch(TouchEventArgs e)
@@ -121,7 +133,20 @@
     
         flag = true;
     }
+
+    private void SendUndoToServer()
+    {
+        hubConnection?.SendAsync("Undo");
+    }
     
+    private void Undo()
+    {
+        if (Lines.Any())
+        {
+            Lines.RemoveAt(Lines.Count - 1);
+        }
+        
+    }
     private void UpMouse(MouseEventArgs e)
     {
         flag = false;
@@ -153,7 +178,6 @@
     }
     #endregion
     
-    
     #region signalr
 
     public string HubAddress = "https://drawingappserver.azurewebsites.net/DrawHub";
@@ -179,6 +203,12 @@
                 Console.WriteLine(newColor);
                 await InvokeAsync(StateHasChanged);
         });
+        
+        hubConnection.On("Undo", 
+            async () =>
+            {
+                Undo();
+            });
         
         hubConnection.On<double, double, double, double, string, float>("ReceiveDraw", async (SprevX, SprevY, ScurrX, ScurrY, Scolor, SlineWidth) =>
         {
@@ -222,14 +252,15 @@
             "StartLines", cancellationTokenSource.Token);
         await foreach (Line line in stream)
         {
-                Lines.Add(line);
-                status++;
-                await Task.Yield();
+            Lines.Add(line);
+            status++;
+            await Task.Yield();
         }
         
         Console.WriteLine("Initiliazed");
         StateHasChanged();
     } 
+    
     
     public async ValueTask DisposeAsync()
     {
